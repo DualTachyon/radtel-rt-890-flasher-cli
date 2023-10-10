@@ -1,0 +1,33 @@
+name: CI
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Build solution
+      run: msbuild RT-890-Flasher-CLI.sln -t:rebuild -property:Configuration=Release
+
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: RT-890-Flasher
+        path: ${{ github.workspace }}\bin\Release\RT-890-Flasher-CLI.exe
+
+    - name: 'Create Release'
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "RT-890-Flasher-CLI.exe"
